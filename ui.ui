@@ -33,7 +33,7 @@
      <string notr="true">background-color: dark;</string>
     </property>
     <property name="currentIndex">
-     <number>5</number>
+     <number>0</number>
     </property>
     <widget class="QWidget" name="main_tab">
      <property name="styleSheet">
@@ -57,8 +57,8 @@
       <widget class="QLabel" name="label">
        <property name="geometry">
         <rect>
-         <x>10</x>
-         <y>40</y>
+         <x>20</x>
+         <y>100</y>
          <width>511</width>
          <height>141</height>
         </rect>
@@ -74,28 +74,6 @@ background-color: dark;</string>
        </property>
        <property name="text">
         <string>Добро пожаловать в программу ресторана</string>
-       </property>
-       <property name="margin">
-        <number>40</number>
-       </property>
-      </widget>
-      <widget class="QLabel" name="label_2">
-       <property name="geometry">
-        <rect>
-         <x>10</x>
-         <y>170</y>
-         <width>591</width>
-         <height>141</height>
-        </rect>
-       </property>
-       <property name="styleSheet">
-        <string notr="true">padding-left: 20;
-background-color: dark;</string>
-       </property>
-       <property name="text">
-        <string>Здесь вы можете посмотреть список столов,
- забронировать стол или cоздать счет,
- а так же проверить список клиентов</string>
        </property>
        <property name="margin">
         <number>40</number>

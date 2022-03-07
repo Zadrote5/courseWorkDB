@@ -3,7 +3,7 @@ import os
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.sql import func
 from sqlalchemy import create_engine, MetaData, Table, Column, Integer, DateTime, Boolean, String, ForeignKey
-from sqlalchemy.orm import mapper, sessionmaker
+from sqlalchemy.orm import mapper, sessionmaker, relationship
 import environ
 
 # Инициализация переменной среды
@@ -67,8 +67,9 @@ class Booking(Base):
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     time = Column(DateTime)
-    table_id = Column(Integer)
-    client_id = Column(Integer)
+    table_id = Column(Integer, ForeignKey('table.id'))
+    client_id = Column(Integer, ForeignKey('table.id'))
+    # booking = relationship("TableModel", back_populates="booking")
 
     def __init__(self, time, table_id, client_id):
         """"""

@@ -3,6 +3,9 @@ from dateutil import parser
 from PyQt5 import uic
 from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QTableWidgetItem, QMessageBox
 import sys
+
+from sqlalchemy import and_
+
 from db.tables.tables import Client, TableModel, get_session, Bill, Dish, Worker, Booking
 
 
@@ -47,7 +50,6 @@ class App(QWidget):
     def set_workers_table(self, table, rows: []):
         table.setRowCount(len(rows))
         for worker_num, worker in enumerate(rows):
-
             self.session.refresh(worker)
             worker = worker.__dict__
 
@@ -60,19 +62,22 @@ class App(QWidget):
     # Метод заполнения таблицы столов
     def set_tables_table(self):
         table = self.ui.tables_table
-        rows = session.query(TableModel).all()
+        rows = self.session.query(TableModel).all()
 
         table.setRowCount(len(rows))
         for table_num, table_model in enumerate(rows):
             self.session.refresh(table_model)
             table_model = table_model.__dict__
-            print(table_model)
-
+            booking = self.session.query(Booking).filter(Booking.table_id == table_model['id'], Booking.time > datetime.datetime.now()).first()
             table.setItem(table_num, 0, QTableWidgetItem(str(table_model['id'])))
             table.setItem(table_num, 1, QTableWidgetItem(str(table_model['hall'])))
             table.setItem(table_num, 2, QTableWidgetItem(str(table_model['seats_number'])))
             table.setItem(table_num, 3, QTableWidgetItem('Да' if table_model['busy_status'] == 1 else 'Нет'))
-            # table.setItem(table_num, 4, QTableWidgetItem(table_model['booking']))
+            if booking:
+                booking = booking.__dict__
+                table.setItem(table_num, 4, QTableWidgetItem(str(booking['time'])))
+            else:
+                table.setItem(table_num, 4, QTableWidgetItem('Нет'))
 
         table.resizeColumnsToContents()
 
@@ -124,6 +129,8 @@ class App(QWidget):
     # Метод добавления блюда в счет
     def add_dish(self):
         try:
+            if self.current_bill.payment_status == 1:
+                return self.alert(text="Счет уже закрыт!")
             dish = Dish(
                 price=int(self.ui.dish_price_input.toPlainText()),
                 name=self.ui.dish_name_input.toPlainText(),
@@ -160,7 +167,6 @@ class App(QWidget):
     # Метод добавления брони
     def add_reservation(self):
         try:
-            print(parser.parse(str(self.ui.time_reservation_input.dateTime().toString('dd-MM-yyyy hh:mm'))))
             reservation = Booking(
                 time=parser.parse(str(self.ui.time_reservation_input.dateTime().toString('dd-MM-yyyy hh:mm'))),
                 table_id=int(self.ui.table_reservation_input.toPlainText()),
