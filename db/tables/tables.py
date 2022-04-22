@@ -35,15 +35,28 @@ class TableModel(Base):
     __tablename__ = 'table'
 
     id = Column(Integer, primary_key=True, autoincrement=True)
-    hall = Column(String)
+    hall_id = Column(Integer, ForeignKey('hall.id'))
     seats_number = Column(Integer)
-    busy_status = Column(Boolean)
 
-    def __init__(self, hall, seats_number, busy_status):
+    def __init__(self, hall_id, seats_number):
         """"""
-        self.hall = hall
+        self.hall_id = hall_id
         self.seats_number = seats_number
-        self.busy_status = busy_status
+
+
+class OrderItem(Base):
+    __tablename__ = 'order_item'
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    bill_id = Column(Integer, ForeignKey('bill.id'))
+    dish_id = Column(Integer, ForeignKey('dish.id'))
+    quantity = Column(Integer)
+
+    def __init__(self, bill_id, dish_id, quantity):
+        """"""
+        self.bill_id = bill_id
+        self.dish_id = dish_id
+        self.quantity = quantity
 
 
 class Worker(Base):
@@ -69,7 +82,6 @@ class Booking(Base):
     time = Column(DateTime)
     table_id = Column(Integer, ForeignKey('table.id'))
     client_id = Column(Integer, ForeignKey('table.id'))
-    # booking = relationship("TableModel", back_populates="booking")
 
     def __init__(self, time, table_id, client_id):
         """"""
@@ -85,17 +97,28 @@ class Bill(Base):
     table_id = Column(Integer, ForeignKey("table.id"))
     worker_id = Column(Integer, ForeignKey("worker.id"))
     client_id = Column(Integer, ForeignKey("client.id"))
-    total = Column(Integer)
     time = Column(DateTime(timezone=True), default=func.now())
     payment_status = Column(Boolean)
 
-    def __init__(self, table_id, worker_id, client_id, total, payment_status):
+    def __init__(self, table_id, worker_id, client_id, payment_status):
         """"""
         self.table_id = table_id
         self.worker_id = worker_id
         self.client_id = client_id
-        self.total = total
         self.payment_status = payment_status
+
+
+class Hall(Base):
+    __tablename__ = 'hall'
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    space = Column(Integer)
+    name = Column(String)
+
+    def __init__(self, name, space):
+        """"""
+        self.name = name
+        self.space = space
 
 
 class Dish(Base):
@@ -103,13 +126,11 @@ class Dish(Base):
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     price = Column(Integer)
-    bill_id = Column(Integer, ForeignKey("bill.id"))
     name = Column(String)
 
-    def __init__(self, price, bill_id, name):
+    def __init__(self, price, name):
         """"""
         self.price = price
-        self.bill_id = bill_id
         self.name = name
 
 
